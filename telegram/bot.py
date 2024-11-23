@@ -1,9 +1,9 @@
 import logging
-import os
-from dotenv import load_dotenv
 
 from telegram import ForceReply, Update, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+
+import config
 
 from messages import (
     help_message, 
@@ -22,10 +22,6 @@ logging.basicConfig(
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
-
-load_dotenv(dotenv_path='../.env')
-
-TG_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
@@ -107,10 +103,9 @@ async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await update.message.reply_text(location_error_message)
 
 
-
 def main() -> None:
 
-    application = Application.builder().token(TG_BOT_TOKEN).build()
+    application = Application.builder().token(config.TG_BOT_TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
