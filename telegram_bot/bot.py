@@ -5,6 +5,8 @@ from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandl
 
 import config
 
+from utils import get_db_connection, register_user
+
 from messages import (
     help_message, 
     send_error_message, 
@@ -23,18 +25,25 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
+db_conn = get_db_connection()
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
-    await update.message.reply_text(f"Hi {user.first_name}!\n{help_message}", parse_mode="Markdown")
+    await update.message.reply_text(f"Hi {user.first_name}!\n\n{help_message}", parse_mode="Markdown")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /help is issued."""
     await update.message.reply_text(help_message, parse_mode="Markdown")
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Echo the user message."""
-    await update.message.reply_text(update.message.text)
+## Command to register a user
+async def register(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Register a user in the system."""
+    username = update.effective_user.username
+    chat_id = update.effective_chat.id
+    
+    register_user(chat_id, username, db_conn)
+    await update.message.reply_text(f"Welcome, {username}! You have been registered. 🐦")
 
 ## Command to add a friend
 async def add_friend(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -109,11 +118,13 @@ def main() -> None:
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
+
+    application.add_handler(CommandHandler("register", register))
     
     application.add_handler(CommandHandler("send", send))
-    # application.add_handler(CommandHandler("addfriend", add_friend))
-    # application.add_handler(CommandHandler("friends", list_friends))
-    # application.add_handler(CommandHandler("msgs", list_messages))
+    application.add_handler(CommandHandler("addfriend", add_friend))
+    application.add_handler(CommandHandler("friends", list_friends))
+    application.add_handler(CommandHandler("msgs", list_messages))
     application.add_handler(CommandHandler("loc", set_location))
 
     # on non command i.e message - echo the message on Telegram
