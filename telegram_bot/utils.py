@@ -28,10 +28,11 @@ def get_db_connection():
         logging.error(f"Database connection failed: {e}")
         raise
 
+
 def register_user(chat_id, username, db_conn: psycopg2.extensions.connection) -> None:
     cursor = db_conn.cursor()
     cursor.execute(
-        "INSERT INTO users (chat_id, username) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+        "INSERT INTO users (tg_user_id, username) VALUES (%s, %s) ON CONFLICT DO NOTHING",
         (chat_id, username)
     )
     db_conn.commit()
@@ -49,3 +50,11 @@ def get_all_users(db_conn: psycopg2.extensions.connection) -> list:
     cursor = db_conn.cursor()
     cursor.execute("SELECT username FROM users")
     return cursor.fetchall()
+
+def insert_location(user_id, latitude, longitude, db_conn: psycopg2.extensions.connection) -> None:
+    cursor = db_conn.cursor()
+    cursor.execute(
+        "INSERT INTO user_locations (tg_user_id, latitude, longitude) VALUES (%s, %s, %s) ON CONFLICT (tg_user_id) DO NOTHING",
+        (user_id, latitude, longitude)
+    )
+    db_conn.commit()

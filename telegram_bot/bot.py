@@ -5,7 +5,12 @@ from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandl
 
 import config
 
-from utils import get_db_connection, register_user, get_all_users
+from utils import (
+    get_db_connection, 
+    register_user, 
+    get_all_users,
+    insert_location
+    )
 
 from messages import (
     help_message, 
@@ -106,14 +111,16 @@ async def set_location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle location shared by the user."""
     if update.message.location:
+        user_id = update.effective_chat.id
         user_location = update.message.location
         latitude = user_location.latitude
         longitude = user_location.longitude
 
         # Log the location data
-        logger.info(f"Received location: Latitude={latitude}, Longitude={longitude}")
+        logger.info(f"Received location for {user_id}: Latitude={latitude}, Longitude={longitude}")
 
         # TODO: Save location to a database or persistent storage
+        insert_location(user_id, latitude, longitude, db_conn) 
 
         await update.message.reply_text(thanks_for_location_message)
     else:
