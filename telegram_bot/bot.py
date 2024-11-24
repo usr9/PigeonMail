@@ -119,7 +119,6 @@ async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         # Log the location data
         logger.info(f"Received location for {user_id}: Latitude={latitude}, Longitude={longitude}")
 
-        # TODO: Save location to a database or persistent storage
         insert_location(user_id, latitude, longitude, db_conn) 
 
         await update.message.reply_text(thanks_for_location_message)
