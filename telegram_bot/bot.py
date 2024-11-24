@@ -5,7 +5,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandl
 
 import config
 
-from utils import get_db_connection, register_user
+from utils import get_db_connection, register_user, get_all_users
 
 from messages import (
     help_message, 
@@ -84,6 +84,14 @@ async def list_friends(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     """List all friends of the user."""
     #TODO implement this using the database
 
+## Command to list all users #!Temporary
+async def list_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """List all users in the system."""
+    users = get_all_users(db_conn)
+    user_list = "\n".join([user["username"] for user in users])
+    additional_message = "_This is the list of all users in the system. This is temporary until friendship mechanism is implemented._"
+    await update.message.reply_text(f"{additional_message}\n\n{user_list}")
+
 ## Command to list messages
 async def list_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """List all messages of the user."""
@@ -120,6 +128,7 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
 
     application.add_handler(CommandHandler("register", register))
+    application.add_handler(CommandHandler("listusers", list_users))
     
     application.add_handler(CommandHandler("send", send))
     application.add_handler(CommandHandler("addfriend", add_friend))
