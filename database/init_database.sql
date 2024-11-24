@@ -32,8 +32,8 @@ CREATE TABLE pigeons (
     sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Owner's user ID
     recipient_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Recipient's user ID
     mail_id INT NOT NULL REFERENCES mails(id) ON DELETE CASCADE, -- Mail ID
-    status VARCHAR(20) DEFAULT 'flying',         -- Pigeon status: 'flying', 'dead'
-)
+    status VARCHAR(20) DEFAULT 'flying'         -- Pigeon status: 'flying', 'dead'
+);
 
 CREATE TABLE user_locations (
     id SERIAL PRIMARY KEY,
