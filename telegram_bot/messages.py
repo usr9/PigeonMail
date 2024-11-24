@@ -18,7 +18,6 @@ _If you don't have one, you can set it in the settings._
 /friends - List all __your__ _friends_
 /msgs - List all your *messages*
 /help - Show this message
-
 """
 
 
